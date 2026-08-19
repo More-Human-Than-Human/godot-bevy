@@ -170,6 +170,7 @@ pub fn derive_node_tree_view(item: TokenStream) -> TokenStream {
 /// - `component = Comp` (**required**) — the Bevy component type to insert.
 /// - `with = fn` — a function `fn(T) -> T` (or any `Into` adapter) applied to the Godot
 ///   value before it is passed to the component constructor.
+/// - `hint = NAME` and `hint_string = expr` configure the Godot Inspector property hint.
 /// - `as` and `default` are **not** allowed on Godot-first field bindings.
 ///
 /// ## Struct-level companions
@@ -283,6 +284,11 @@ pub fn derive_bevy_components_entry(item: TokenStream) -> TokenStream {
 /// | `as = T` | Godot export type (defaults to the field's Rust type when omitted). |
 /// | `default = expr` | Editor default value passed to `#[init(val = …)]`. A pure-Bevy `spawn(T)` uses the struct's own `Default` — make them agree if you rely on `spawn(T)`. |
 /// | `with = fn` | Converts the Godot export value before assigning to the field. |
+/// | `description = "..."` | Adds an Inspector description for generated `require(...)` exports. |
+/// | `hint = NAME` | Sets the Godot `PropertyHint` variant. |
+/// | `hint_string = expr` | Supplies the hint string; requires `hint = NAME`. |
+///
+/// Rust `///` comments on primary exported fields are forwarded as Godot property descriptions.
 ///
 /// ## Reserved keys
 ///

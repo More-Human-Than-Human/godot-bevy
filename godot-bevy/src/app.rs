@@ -4,7 +4,7 @@ use crate::plugins::{
 use crate::watchers::collision_watcher::CollisionWatcher;
 use crate::watchers::input_watcher::GodotInputWatcher;
 use crate::watchers::scene_tree_watcher::SceneTreeWatcher;
-use bevy_app::{App, PluginsState};
+use bevy_app::{App, AppExit, Last, PluginsState};
 use bevy_ecs::message::Messages;
 use crossbeam_channel::unbounded;
 use godot::prelude::*;
@@ -465,6 +465,15 @@ impl INode for BevyApp {
         }
 
         self.do_initialize();
+    }
+
+    /// Allows Bevy to properly cleanup resources before Godot fully removes from tree
+    fn exit_tree(&mut self) {
+        if let Some(app) = self.app.as_mut() {
+            app.world_mut().write_message(AppExit::Success);
+            app.world_mut().run_schedule(Last);
+        }
+        self.teardown();
     }
 
     #[tracing::instrument(skip_all)]
